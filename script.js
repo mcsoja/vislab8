@@ -10,7 +10,7 @@ d3.csv("driving.csv", d3.autoType).then(data => {
       milesList.push(data[i].miles);
     }    
     
-    const margin = ({top: 25, right: 10, bottom: 25, left: 40})
+    const margin = ({top: 25, right: 10, bottom: 25, left: 40})    
     const width = 550 - margin.left - margin.right,
     height = 550 - margin.top - margin.bottom;
 
