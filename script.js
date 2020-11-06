@@ -165,7 +165,7 @@ d3.csv("driving.csv", d3.autoType).then(data => {
       //.attr("transform", `0, translate(${width})`)
 
       yAxisGroup.select(".domain").remove()
-
+   
 
     xAxisGroup.selectAll(".tick line")
     .clone()
