@@ -10,15 +10,16 @@ d3.csv("driving.csv", d3.autoType).then(data => {
       milesList.push(data[i].miles);
     }    
     
-    const margin = ({top: 25, right: 25, bottom: 25, left: 25})
-    const width = 500 - margin.left - margin.right,
-    height = 500 - margin.top - margin.bottom;
+    const margin = ({top: 25, right: 10, bottom: 25, left: 40})
+    const width = 550 - margin.left - margin.right,
+    height = 550 - margin.top - margin.bottom;
 
     const svg = d3.select(".chart").append("svg")
       .attr("width", width + margin.left + margin.right)
       .attr("height", height + margin.top + margin.bottom)
       .append("g")
-      .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+      .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+      .attr('x', 100)
 
     const Gas = d3
       .scaleLinear()
@@ -30,6 +31,26 @@ d3.csv("driving.csv", d3.autoType).then(data => {
       .scaleLinear()
       .domain(d3.extent(milesList)).nice()
       .range([0,height])
+
+    var dollarFormat = function(d) { return '$' + d3.format('.2f')(d) };
+    var tick = function(d) { return d3.format(',')(d) };
+
+      const line = d3
+      .line()
+      .x(function(d) {
+          return Miles(d.miles)
+      })
+      .y(function (d){
+          return Gas(d.gas)
+      });
+
+   svg.append("path")
+      .datum(data)
+      .attr("class", "line")
+      .attr("d", line)
+      .attr("stroke", "black")
+      .attr("stroke-width", 2)
+      .attr("fill", "#FFFFFF");
 
       var dot = svg.append("g")
       .selectAll("dot")
@@ -74,39 +95,40 @@ d3.csv("driving.csv", d3.autoType).then(data => {
           .attr("stroke-linejoin", "round");
       }
 
-    const line = d3
-      .line()
-      .x(function(d) {
-          return Miles(d.miles)
-      })
-      .y(function (d){
-          return Gas(d.gas)
-      });
+//     const line = d3
+//       .line()
+//       .x(function(d) {
+//           return Miles(d.miles)
+//       })
+//       .y(function (d){
+//           return Gas(d.gas)
+//       });
 
-   svg.append("path")
-      .datum(data)
-      .attr("class", "line")
-      .attr("d", line)
-      .attr("stroke", "black")
-      .attr("stroke-width", 2)
-      .attr("fill", "#FFFFFF");
+//    svg.append("path")
+//       .datum(data)
+//       .attr("class", "line")
+//       .attr("d", line)
+//       .attr("stroke", "black")
+//       .attr("stroke-width", 2)
+//       .attr("fill", "#FFFFFF");
 
     dot.append('circle')
       .attr('class', 'dot')
       .attr('cx', (d,i)=>Miles(d.miles))
       .attr('cy', (d,i)=>Gas(d.gas))
       .attr('fill', 'white') 
-      .attr('r',5)
+      .attr('r',4)
       .attr('opacity', 2)
       .attr('stroke', 'black')
-      .attr('stroke-width', '.75')
+      .attr('stroke-width', '1.2')
       
      dot
         .append('text')
         .attr("class", "label")
 		.attr('x', (d)=>Miles(d.miles)+6)
         .attr('y', (d)=>Gas(d.gas))
-        .attr("font-size", 8)
+        .attr("font-size", 10)
+        .each(position)
 		.text(function(d){
 			return d.year
         })
@@ -119,6 +141,8 @@ d3.csv("driving.csv", d3.autoType).then(data => {
       const xAxis = d3.axisBottom()
       .scale(Miles)
       .ticks(5, "s")
+      .tickFormat(tick)
+      
     
     // Draw the axis
     let xAxisGroup = svg.append("g")
@@ -129,6 +153,8 @@ d3.csv("driving.csv", d3.autoType).then(data => {
       const yAxis = d3.axisLeft()
           .scale(Gas)
           .ticks(8, "s")
+          .tickFormat(dollarFormat)
+
 
     xAxisGroup.select(".domain").remove()
     
@@ -153,7 +179,7 @@ d3.csv("driving.csv", d3.autoType).then(data => {
       
     svg.append("text")
       .attr('x', 320)
-      .attr('y', 450)
+      .attr('y', 495)
       .text("Miles per person per year")
       .attr('font-weight', 'bold')
       .attr('font-size',13)
